@@ -1,0 +1,718 @@
+# PROGETTO DATABASE LIBRERIA
+## RACCOLTA COMPLETA DEL LAVORO SQL – 9 E 10 NOVEMBRE 2026
+
+---
+
+# PARTE 1 – CREAZIONE DEL DATABASE
+
+## 1. Creazione e selezione del database
+
+```sql
+-- Crea il database Libreria
+CREATE DATABASE Libreria;
+
+-- Seleziona il database sul quale lavorare
+USE Libreria;
+```
+
+## 2. Creazione delle tabelle
+
+```sql
+-- Crea la tabella dei generi letterari
+CREATE TABLE genere (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(45) NOT NULL
+);
+
+-- Crea la tabella degli autori
+CREATE TABLE autori (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(45) NOT NULL,
+    cognome VARCHAR(45) NOT NULL,
+    data_di_nascita DATE,
+    nazionalita VARCHAR(45)
+);
+
+-- Crea la tabella dei libri
+CREATE TABLE libro (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titolo VARCHAR(255) NOT NULL,
+    anno YEAR,
+    id_genere INT NOT NULL,
+    FOREIGN KEY (id_genere) REFERENCES genere(id)
+);
+
+-- Crea la tabella delle copie
+CREATE TABLE copia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_libro INT NOT NULL,
+    casa_editrice VARCHAR(255),
+    numero_copie INT NOT NULL,
+    FOREIGN KEY (id_libro) REFERENCES libro(id)
+);
+
+-- Crea la tabella intermedia per la relazione
+-- molti-a-molti tra libri e autori
+CREATE TABLE libro_autori (
+    id_autore INT NOT NULL,
+    id_libro INT NOT NULL,
+    PRIMARY KEY (id_autore, id_libro),
+    FOREIGN KEY (id_autore) REFERENCES autori(id),
+    FOREIGN KEY (id_libro) REFERENCES libro(id)
+);
+```
+
+### Logica delle relazioni
+
+- `genere` e `libro`: un genere può essere associato a più libri.
+- `libro` e `copia`: un libro può avere più copie registrate.
+- `autori` e `libro`: la relazione è molti-a-molti.
+- `libro_autori` è la tabella intermedia che collega libri e autori.
+
+Le FOREIGN KEY collegano le tabelle e garantiscono che i riferimenti riguardino record esistenti.
+
+---
+
+# PARTE 2 – INSERIMENTO DEI DATI
+
+## 3. Inserimento dei generi
+
+```sql
+-- Inserisce gli 8 generi letterari
+INSERT INTO genere (nome) VALUES
+('Fantasy'),
+('Giallo'),
+('Romanzo'),
+('Horror'),
+('Avventura'),
+('Fantascienza'),
+('Storico'),
+('Biografia');
+```
+
+## 4. Inserimento degli autori
+
+```sql
+-- Inserisce gli 8 autori con data di nascita e nazionalità
+INSERT INTO autori
+(nome, cognome, data_di_nascita, nazionalita)
+VALUES
+('J.K.', 'Rowling', '1965-07-31', 'Britannica'),
+('George', 'Orwell', '1903-06-25', 'Britannica'),
+('Stephen', 'King', '1947-09-21', 'Americana'),
+('Italo', 'Calvino', '1923-10-15', 'Italiana'),
+('Agatha', 'Christie', '1890-09-15', 'Britannica'),
+('J.R.R.', 'Tolkien', '1892-01-03', 'Britannica'),
+('Dan', 'Brown', '1964-06-22', 'Americana'),
+('Francis Scott', 'Fitzgerald', '1896-09-24', 'Americana');
+```
+
+## 5. Inserimento dei libri
+
+```sql
+-- Inserisce gli 8 libri con anno di pubblicazione e genere
+INSERT INTO libro (titolo, anno, id_genere)
+VALUES
+('Harry Potter e la pietra filosofale', 1997, 1),
+('1984', 1949, 3),
+('IT', 1986, 4),
+('Il barone rampante', 1957, 3),
+('Assassinio sull Orient Express', 1934, 2),
+('Il Signore degli Anelli', 1954, 1),
+('Il codice da Vinci', 2003, 2),
+('Il grande Gatsby', 1925, 3);
+```
+
+## 6. Inserimento delle copie
+
+```sql
+-- Registra le copie dei libri, la casa editrice e la quantità
+INSERT INTO copia
+(id_libro, casa_editrice, numero_copie)
+VALUES
+(1, 'Salani', 5),
+(2, 'Mondadori', 3),
+(3, 'Sperling & Kupfer', 4),
+(4, 'Einaudi', 2),
+(5, 'Mondadori', 3),
+(6, 'Bompiani', 5),
+(7, 'Mondadori', 4),
+(8, 'Mondadori', 2);
+```
+
+## 7. Inserimento delle associazioni tra libri e autori
+
+```sql
+-- Collega ogni libro al rispettivo autore
+INSERT INTO libro_autori (id_autore, id_libro)
+VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(8, 8);
+```
+
+**Attenzione:** le query di inserimento documentano il popolamento iniziale. Non rieseguirle sul database già popolato, perché potrebbero generare duplicati o errori di chiave primaria.
+
+---
+
+# PARTE 3 – CONTROLLO DEL DATABASE
+
+## 8. Visualizzazione dei database
+
+```sql
+-- Mostra tutti i database presenti
+SHOW DATABASES;
+```
+
+## 9. Selezione del database
+
+```sql
+-- Seleziona il database Libreria
+USE Libreria;
+```
+
+## 10. Visualizzazione delle tabelle
+
+```sql
+-- Mostra tutte le tabelle del database selezionato
+SHOW TABLES;
+```
+
+## 11. Visualizzazione dei dati
+
+```sql
+-- Visualizza tutti gli autori
+SELECT * FROM autori;
+
+-- Visualizza tutti i libri
+SELECT * FROM libro;
+
+-- Visualizza tutti i generi
+SELECT * FROM genere;
+
+-- Visualizza tutte le copie
+SELECT * FROM copia;
+
+-- Visualizza le associazioni tra libri e autori
+SELECT * FROM libro_autori;
+```
+
+---
+
+# PARTE 4 – CONCETTI SQL E QUERY DI PROVA
+
+## 12. WHERE – Filtrare i dati
+
+```sql
+-- Mostra i libri pubblicati dopo il 2000
+SELECT titolo, anno
+FROM libro
+WHERE anno > 2000;
+```
+
+`WHERE` seleziona soltanto le righe che soddisfano una condizione.
+
+## 13. ORDER BY – Ordinare i dati
+
+```sql
+-- Ordina i generi alfabeticamente in ordine crescente
+SELECT nome
+FROM genere
+ORDER BY nome ASC;
+```
+
+```sql
+-- Ordina i generi alfabeticamente in ordine decrescente
+SELECT nome
+FROM genere
+ORDER BY nome DESC;
+```
+
+- `ASC`: crescente.
+- `DESC`: decrescente.
+
+## 14. LIKE – Cercare una parola
+
+```sql
+-- Cerca i libri il cui titolo contiene Harry
+SELECT titolo
+FROM libro
+WHERE titolo LIKE '%Harry%';
+```
+
+Il simbolo `%` rappresenta una sequenza qualsiasi di caratteri.
+
+## 15. DISTINCT – Eliminare i duplicati dal risultato
+
+```sql
+-- Mostra ogni casa editrice una sola volta
+SELECT DISTINCT casa_editrice
+FROM copia;
+```
+
+`DISTINCT` non cancella i dati dalla tabella: elimina soltanto le ripetizioni nel risultato.
+
+## 16. LIMIT – Limitare i risultati
+
+```sql
+-- Mostra soltanto i primi cinque libri
+SELECT titolo, anno
+FROM libro
+LIMIT 5;
+```
+
+## 17. COUNT – Contare i record
+
+```sql
+-- Conta tutte le registrazioni nella tabella copia
+SELECT COUNT(*) AS totale_registrazioni
+FROM copia;
+```
+
+## 18. GROUP BY – Raggruppare i risultati
+
+```sql
+-- Conta quante registrazioni di copie ci sono per ogni libro
+SELECT
+    id_libro,
+    COUNT(*) AS numero_registrazioni
+FROM copia
+GROUP BY id_libro;
+```
+
+`GROUP BY` raggruppa le righe che hanno lo stesso valore.
+
+---
+
+# PARTE 5 – INNER JOIN E LEFT JOIN
+
+## 19. INNER JOIN – Libri e autori
+
+```sql
+-- Mostra il titolo di ogni libro e il nome e cognome dell'autore
+-- libro_autori collega libri e autori
+
+SELECT
+    libro.titolo,
+    autori.nome,
+    autori.cognome
+FROM libro
+INNER JOIN libro_autori
+    ON libro.id = libro_autori.id_libro
+INNER JOIN autori
+    ON libro_autori.id_autore = autori.id;
+```
+
+## 20. INNER JOIN – Libri e generi
+
+```sql
+-- Mostra ogni libro insieme al suo genere
+-- libro.id_genere è collegato a genere.id
+
+SELECT
+    libro.titolo,
+    genere.nome
+FROM libro
+INNER JOIN genere
+    ON libro.id_genere = genere.id;
+```
+
+## 21. LEFT JOIN – Libri, generi e copie
+
+```sql
+-- Mostra tutti i libri, il genere, la casa editrice e il numero di copie
+-- LEFT JOIN mantiene tutti i libri anche se non hanno copie registrate
+-- Se manca una copia, i campi di copia risultano NULL
+
+SELECT
+    libro.titolo,
+    genere.nome,
+    copia.casa_editrice,
+    copia.numero_copie
+FROM libro
+INNER JOIN genere
+    ON libro.id_genere = genere.id
+LEFT JOIN copia
+    ON libro.id = copia.id_libro;
+```
+
+## 22. INNER JOIN – Conteggio dei libri per genere
+
+```sql
+-- Conta i libri appartenenti a ogni genere
+-- INNER JOIN mostra soltanto i generi che hanno libri associati
+-- GROUP BY raggruppa i risultati per genere
+
+SELECT
+    genere.nome,
+    COUNT(libro.id) AS totale_libri
+FROM libro
+INNER JOIN genere
+    ON libro.id_genere = genere.id
+GROUP BY genere.nome;
+```
+
+## 23. LEFT JOIN – Conteggio dei libri per tutti i generi
+
+```sql
+-- Conta i libri per ogni genere
+-- LEFT JOIN mantiene anche i generi senza libri
+-- COUNT(libro.id) restituisce 0 quando non ci sono libri associati
+
+SELECT
+    genere.nome,
+    COUNT(libro.id) AS totale_libri
+FROM genere
+LEFT JOIN libro
+    ON genere.id = libro.id_genere
+GROUP BY genere.nome;
+```
+
+**Concetto fondamentale:** nella query con LEFT JOIN, la tabella scritta subito dopo FROM è la tabella di sinistra. In questo caso è `genere`, quindi tutti i generi vengono mantenuti nel risultato.
+
+---
+
+# PARTE 6 – GLI 11 ESERCIZI COMPLETATI
+
+## ESERCIZIO 1 – Autori ordinati per cognome e nome
+
+```sql
+-- ESERCIZIO 1
+-- Mostrare tutti gli autori ordinati per cognome e poi per nome
+
+SELECT
+    nome,
+    cognome
+FROM autori
+ORDER BY cognome ASC, nome ASC;
+```
+
+**Logica:** ordina prima per cognome e poi per nome.
+
+## ESERCIZIO 2 – Libri pubblicati dopo il 2000
+
+```sql
+-- ESERCIZIO 2
+-- Mostrare titolo e anno dei libri pubblicati dopo il 2000
+
+SELECT
+    titolo,
+    anno
+FROM libro
+WHERE anno > 2000;
+```
+
+**Logica:** `>` significa maggiore di. Per includere anche il 2000 si usa `>=`.
+
+## ESERCIZIO 3 – Autori italiani
+
+```sql
+-- ESERCIZIO 3
+-- Trovare gli autori italiani
+
+SELECT
+    nome,
+    cognome,
+    nazionalita
+FROM autori
+WHERE nazionalita = 'Italiana';
+```
+
+**Logica:** seleziona gli autori la cui nazionalità è Italiana.
+
+## ESERCIZIO 4 – Titoli contenenti una parola
+
+```sql
+-- ESERCIZIO 4
+-- Trovare i libri il cui titolo contiene la parola Harry
+
+SELECT
+    titolo
+FROM libro
+WHERE titolo LIKE '%Harry%';
+```
+
+**Logica:** `LIKE` cerca una parte del testo. La sensibilità a maiuscole e minuscole dipende dalla collation utilizzata.
+
+## ESERCIZIO 5 – Case editrici senza duplicati
+
+```sql
+-- ESERCIZIO 5
+-- Elencare le case editrici presenti senza duplicati
+
+SELECT DISTINCT
+    casa_editrice
+FROM copia;
+```
+
+**Logica:** `DISTINCT` mostra ogni casa editrice una sola volta.
+
+## ESERCIZIO 6 – I cinque libri più recenti
+
+```sql
+-- ESERCIZIO 6
+-- Mostrare i cinque libri più recenti
+
+SELECT
+    titolo,
+    anno
+FROM libro
+ORDER BY anno DESC
+LIMIT 5;
+```
+
+**Logica:** `DESC` ordina dal più recente al più vecchio; `LIMIT 5` restituisce i primi cinque.
+
+## ESERCIZIO 7 – Ogni libro con il suo genere
+
+```sql
+-- ESERCIZIO 7
+-- Mostrare ogni libro con il nome del suo genere
+
+SELECT
+    libro.titolo,
+    genere.nome
+FROM libro
+INNER JOIN genere
+    ON libro.id_genere = genere.id;
+```
+
+**Logica:** `libro.id_genere` contiene il riferimento a `genere.id`.
+
+## ESERCIZIO 8 – Ogni libro con i suoi autori
+
+```sql
+-- ESERCIZIO 8
+-- Mostrare ogni libro con nome e cognome dei suoi autori
+
+SELECT
+    libro.titolo,
+    autori.nome,
+    autori.cognome
+FROM libro
+INNER JOIN libro_autori
+    ON libro.id = libro_autori.id_libro
+INNER JOIN autori
+    ON libro_autori.id_autore = autori.id;
+```
+
+**Logica:** `libro_autori` è la tabella intermedia che collega i libri agli autori.
+
+## ESERCIZIO 9 – Libri di un autore dato il cognome
+
+```sql
+-- ESERCIZIO 9
+-- Trovare i libri scritti da un autore dato il suo cognome
+
+SELECT
+    libro.titolo,
+    autori.nome,
+    autori.cognome
+FROM autori
+INNER JOIN libro_autori
+    ON autori.id = libro_autori.id_autore
+INNER JOIN libro
+    ON libro_autori.id_libro = libro.id
+WHERE autori.cognome = 'King';
+```
+
+**Logica:** partiamo da `autori`, perché il cognome si trova in quella tabella. `WHERE` filtra l'autore desiderato.
+
+## ESERCIZIO 10 – Libri Fantasy con almeno una copia
+
+```sql
+-- ESERCIZIO 10
+-- Trovare i libri Fantasy che hanno almeno una copia disponibile
+
+SELECT
+    libro.titolo,
+    genere.nome,
+    copia.casa_editrice,
+    copia.numero_copie
+FROM libro
+INNER JOIN genere
+    ON libro.id_genere = genere.id
+INNER JOIN copia
+    ON libro.id = copia.id_libro
+WHERE genere.nome = 'Fantasy'
+  AND copia.numero_copie >= 1;
+```
+
+**Logica:** colleghiamo libro, genere e copia. `WHERE` seleziona Fantasy e `AND` richiede almeno una copia.
+
+## ESERCIZIO 11 – Autori che hanno scritto libri di un certo genere
+
+```sql
+-- ESERCIZIO 11
+-- Mostrare gli autori che hanno scritto almeno un libro Fantasy
+-- Senza ripetere lo stesso autore
+
+SELECT DISTINCT
+    autori.nome,
+    autori.cognome
+FROM autori
+INNER JOIN libro_autori
+    ON autori.id = libro_autori.id_autore
+INNER JOIN libro
+    ON libro_autori.id_libro = libro.id
+INNER JOIN genere
+    ON libro.id_genere = genere.id
+WHERE genere.nome = 'Fantasy';
+```
+
+**Logica:** colleghiamo autori, libri e generi. `DISTINCT` evita di mostrare più volte lo stesso autore.
+
+---
+
+# PARTE 7 – ERRORI INCONTRATI E CORREZIONI
+
+## ERRORE 1 – Database già esistente
+
+**Messaggio:** Error Code 1007 – database exists.
+
+**Causa:** abbiamo provato a creare un database che esisteva già.
+
+**Comando utilizzato per eliminare il database precedente:**
+
+```sql
+-- Elimina il database esistente
+DROP DATABASE libreria;
+```
+
+Successivamente:
+
+```sql
+-- Ricrea il database
+CREATE DATABASE Libreria;
+
+-- Seleziona il database
+USE Libreria;
+```
+
+**Lezione imparata:** prima di creare un database bisogna controllare se esiste già. DROP DATABASE elimina tutto il database, quindi va utilizzato con attenzione.
+
+## ERRORE 2 – Anno fuori intervallo
+
+**Messaggio:** Error Code 1264 – Out of range value for column 'anno'.
+
+**Causa:** abbiamo provato a inserire il libro *Orgoglio e pregiudizio* con anno 1813, ma la colonna `anno` era di tipo `YEAR`, che non accetta quell'anno.
+
+**Correzione:** abbiamo sostituito il libro con *Il grande Gatsby*, anno 1925.
+
+```sql
+-- Inserimento del libro sostitutivo
+INSERT INTO libro (titolo, anno, id_genere)
+VALUES ('Il grande Gatsby', 1925, 3);
+```
+
+**Lezione imparata:** il tipo di dato scelto per una colonna determina i valori che possiamo inserire.
+
+## ERRORE 3 – ID degli autori e dei libri sballati
+
+**Problema:** durante gli inserimenti abbiamo eseguito più volte alcune istruzioni INSERT. Gli ID AUTO_INCREMENT sono aumentati e sono comparsi record duplicati e identificativi più alti del previsto.
+
+**Causa:** AUTO_INCREMENT assegna automaticamente nuovi ID. Cancellare alcune righe non significa che il contatore riparta da 1.
+
+**Correzione effettuata:** abbiamo ripulito i record duplicati e sistemato gli identificativi, arrivando alla situazione finale:
+
+- Autori: ID da 1 a 8.
+- Libri: ID da 1 a 8.
+
+**Lezione imparata:** non bisogna modificare gli ID senza controllare le chiavi esterne e le relazioni che li utilizzano.
+
+## ERRORE 4 – Safe Update Mode
+
+**Messaggio:** Error Code 1175 – Safe Update Mode.
+
+**Causa:** abbiamo tentato di eseguire un aggiornamento degli ID con una query simile a questa:
+
+```sql
+-- Tentativo di ridurre gli ID dei libri
+UPDATE libro
+SET id = id - 16;
+```
+
+MySQL Workbench ha bloccato l'operazione perché la modalità Safe Update richiede condizioni di aggiornamento più sicure.
+
+**Lezione imparata:** UPDATE modifica i dati della tabella. Bisogna specificare con attenzione quali righe si vogliono modificare e non cambiare gli identificativi senza verificare le relazioni.
+
+## ERRORE 5 – Duplicazione della chiave primaria
+
+**Messaggio:** Error Code 1062 – Duplicate entry '1-1' for key 'libro_autori.PRIMARY'.
+
+**Causa:** abbiamo tentato di inserire nuovamente le associazioni tra libri e autori, ma le coppie erano già presenti.
+
+La tabella `libro_autori` utilizza una chiave primaria composta da:
+
+- `id_autore`
+- `id_libro`
+
+La coppia `(1,1)` era già presente e non poteva essere inserita una seconda volta.
+
+**Correzione:** abbiamo verificato che le otto associazioni esistevano già e abbiamo eliminato dal nostro script il comando di inserimento duplicato.
+
+**Lezione imparata:** una chiave primaria composta impedisce che la stessa coppia di valori venga registrata due volte.
+
+## ERRORE 6 – Alias duplicato in una JOIN
+
+**Problema:** durante una query LEFT JOIN abbiamo indicato due volte la tabella `genere`, ottenendo un errore di alias duplicato.
+
+**Correzione:** la query corretta era:
+
+```sql
+-- Mostra tutti i generi, anche quelli senza libri
+SELECT
+    genere.nome,
+    COUNT(libro.id) AS totale_libri
+FROM genere
+LEFT JOIN libro
+    ON genere.id = libro.id_genere
+GROUP BY genere.nome;
+```
+
+**Lezione imparata:** dopo FROM e LEFT JOIN dobbiamo indicare le tabelle che vogliamo collegare. In questo caso partiamo da `genere` e aggiungiamo `libro`.
+
+---
+
+# PARTE 8 – STATO FINALE DEL DATABASE
+
+## Dati presenti
+
+- 8 generi.
+- 8 autori.
+- 8 libri.
+- 8 registrazioni nella tabella copia.
+- 8 associazioni nella tabella libro_autori.
+
+## Risultati verificati
+
+- Tutti gli 11 esercizi sono stati completati.
+- Abbiamo verificato le relazioni tra libri, autori e generi.
+- Abbiamo studiato INNER JOIN e LEFT JOIN.
+- Abbiamo verificato il conteggio delle copie.
+- Abbiamo verificato il conteggio dei libri per genere.
+- Abbiamo compreso come visualizzare anche i generi senza libri.
+
+## Salvataggio del progetto
+
+- `Libreria_Query.sql`: script SQL salvato dalla scheda Query 1.
+- `Libreria_backup.sql`: esportazione del database effettuata in precedenza, da verificare e aggiornare.
+
+**Importante:** il file SQL dello script e il backup del database sono due cose diverse. Il backup non si aggiorna automaticamente quando cambiano i dati.
+
+---
+
+# PARTE 9 – PROSSIMI PASSAGGI
+
+1. Verificare il file `Libreria_backup.sql`.
+2. Creare un backup aggiornato, se necessario.
+3. Utilizzare GitHub seguendo le istruzioni della consegna.
+4. Caricare su Discord l'immagine della query dell'ER diagram.
+5. Preparare l'ambiente di lavoro per la fase successiva del progetto.
+
+**FINE DELLA RACCOLTA – PROGETTO LIBRERIA**
