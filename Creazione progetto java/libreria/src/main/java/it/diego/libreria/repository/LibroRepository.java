@@ -1,5 +1,8 @@
 package it.diego.libreria.repository;
 
-public interface LibroRepository {
+import it.diego.libreria.entity.Libro;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface LibroRepository extends JpaRepository<Libro, Integer> {
 
 }

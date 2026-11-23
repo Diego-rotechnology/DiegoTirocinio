@@ -1,5 +1,6 @@
 package it.diego.libreria.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 
 // Rappresenta la tabella libro del database.
 @Entity
@@ -21,9 +23,9 @@ public class Libro {
 
     private String titolo;
 
-    // Può essere null se l'anno di pubblicazione non è conosciuto,
-    // per questo Integer, int non lo può permettere.
-    private Integer anno;
+    // Può essere null se la data di pubblicazione non è conosciuta.
+    @Column(name = "data_pubblicazione")
+    private LocalDate dataPubblicazione;
 
     // Definisce una relazione molti-a-uno: più libri possono appartenere allo
     // stesso genere.
@@ -41,14 +43,14 @@ public class Libro {
         return titolo;
     }
 
-    // Consente al Service di impostare l'anno di pubblicazione del libro.
-    public void setAnno(Integer anno) {
-        this.anno = anno;
+    // Consente al Service di impostare la data di pubblicazione.
+    public void setDataPubblicazione(LocalDate dataPubblicazione) {
+        this.dataPubblicazione = dataPubblicazione;
     }
 
-    // Consente al Service di leggere l'anno di pubblicazione del libro.
-    public Integer getAnno() {
-        return anno;
+    // Consente al Service di leggere la data di pubblicazione.
+    public LocalDate getDataPubblicazione() {
+        return dataPubblicazione;
     }
 
     // Consente al Service di associare un genere al libro.
