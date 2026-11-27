@@ -5,8 +5,9 @@ import it.diego.libreria.repository.LibroRepository;
 import java.util.List;
 import it.diego.libreria.entity.Libro;
 import java.util.Optional;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import it.diego.libreria.exception.LibroNonTrovatoException;
+import it.diego.libreria.dto.LibroResponseDTO;
+import java.util.ArrayList;
 
 // Gestisce la logica applicativa relativa ai libri.
 @Service
@@ -20,23 +21,39 @@ public class LibroService {
         this.libroRepository = libroRepository;
     }
 
-    // Recupera tutti i libri attraverso il Repository.
-    public List<Libro> getAllLibri() {
-        return libroRepository.findAll();
-    }
+    // Recupera tutti i libri e li converte in DTO.
+    public List<LibroResponseDTO> getAllLibri() {
 
-    public Libro getLibroById(Integer id) {
+        List<Libro> libri = libroRepository.findAll();
 
-        // Cerca il libro tramite il suo ID.
-        Optional<Libro> libro = libroRepository.findById(id);
+        List<LibroResponseDTO> libriDTO = new ArrayList<>();
 
-        if (libro.isPresent()) {
-            return libro.get();
-        } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Libro non trovato"
-            );
+        for (Libro libro : libri) {
+            libriDTO.add(convertiInDTO(libro));
         }
 
+        return libriDTO;
+    }
+
+// Recupera un singolo libro tramite il suo ID e lo converte in DTO.
+public LibroResponseDTO getLibroById(Integer id) {
+
+    // Cerca il libro tramite il suo ID.
+    Optional<Libro> libro = libroRepository.findById(id);
+
+    if (libro.isPresent()) {
+        return convertiInDTO(libro.get());
+    } else {
+        throw new LibroNonTrovatoException("Libro non trovato");
+    }
+}
+
+    // Converte un libro Entity nel corrispondente DTO.
+    private LibroResponseDTO convertiInDTO(Libro libro) {
+        return new LibroResponseDTO(
+                libro.getId(),
+                libro.getTitolo(),
+                libro.getDataPubblicazione(),
+                libro.getGenere().getNome());
     }
 }

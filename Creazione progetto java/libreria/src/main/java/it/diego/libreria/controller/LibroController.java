@@ -4,6 +4,8 @@ import it.diego.libreria.service.LibroService;
 import org.springframework.web.bind.annotation.RestController;
 import it.diego.libreria.entity.Libro;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +26,13 @@ public class LibroController {
 
     // Gestisce la richiesta GET per recuperare tutti i libri.
     @GetMapping
-    public List<Libro> getAllLibri() {
-        return libroService.getAllLibri();
+    public ResponseEntity<List<Libro>> getAllLibri() {
+        return ResponseEntity.ok(libroService.getAllLibri());
     }
 
     // Recupera un singolo libro tramite il suo ID.
     @GetMapping("/{id}")
-    public Libro getLibroById(@PathVariable Integer id) {
-        return libroService.getLibroById(id);
+    public ResponseEntity<Libro> getLibroById(@PathVariable Integer id) {
+        return ResponseEntity.ok(libroService.getLibroById(id));
     }
 }
